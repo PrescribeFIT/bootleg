@@ -93,6 +93,7 @@ task :create_release_archive do
   app_name = Config.app()
 
   remote :build do
+    "mkdir releases/"
     "tar -cvzf releases/#{app_name}.tar.gz _build/#{mix_env}/rel/#{app_name}"
   end
 end
