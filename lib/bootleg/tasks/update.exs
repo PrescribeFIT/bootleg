@@ -4,8 +4,7 @@ use DSL
 task :update do
   invoke(:build)
   invoke(:deploy)
-  invoke(:stop_silent)
-  invoke(:start)
+  invoke(:restart)
 end
 
 task :stop_silent do
