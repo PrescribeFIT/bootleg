@@ -15,6 +15,7 @@ task :remote_build do
   invoke(:remote_scm_update)
   invoke(:compile)
   invoke(:remote_generate_release)
+  invoke(:create_release_archive)
 
   if build_role.options[:release_workspace] do
     invoke(:copy_build_release)
@@ -87,6 +88,15 @@ task :clean do
   end
 end
 
+task :create_release_archive do
+  mix_env = config({:mix_env, "prod"})
+  app_name = Config.app()
+
+  remote :build do
+    "tar -cvzf releases/#{app_name}.tar.gz _build/#{mix_env}/rel/#{app_name}"
+  end
+end
+
 task :copy_build_release do
   build_role = Config.get_role(:build)
   mix_env = config({:mix_env, "prod"})
@@ -97,11 +107,10 @@ task :copy_build_release do
   source_path =
     Path.join([
       config({:ex_path, ""}),
-      "_build/#{mix_env}/rel/#{app_name}/releases/",
-      "#{app_version}/#{app_name}.tar.gz"
+      "releases/#{app_name}.tar.gz"
     ])
 
-  dest_path = Path.join(release_workspace, "#{app_version}.tar.gz")
+  dest_path = Path.join(release_workspace, "#{app_name}.tar.gz")
 
   UI.info("Copying release archive to release workspace")
 
@@ -120,18 +129,18 @@ task :download_release do
   remote_path =
     Path.join(
       source_path,
-      "_build/#{mix_env}/rel/#{app_name}/releases/#{app_version}/#{app_name}.tar.gz"
+      "releases/#{app_name}.tar.gz"
     )
 
   local_archive_folder = "#{File.cwd!()}/releases"
-  local_path = Path.join(local_archive_folder, "#{app_version}.tar.gz")
+  local_path = Path.join(local_archive_folder, "#{app_name}.tar.gz")
 
   UI.info("Downloading release archive")
   File.mkdir_p!(local_archive_folder)
 
   download(:build, remote_path, local_path)
 
-  UI.info("Saved: releases/#{app_version}.tar.gz")
+  UI.info("Saved: releases/#{app_name}.tar.gz")
 end
 
 task :reset_remote do
