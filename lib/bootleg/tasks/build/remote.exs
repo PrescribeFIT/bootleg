@@ -94,7 +94,9 @@ task :create_release_archive do
 
   remote :build do
     "mkdir releases/"
-    "tar -cvzf releases/#{app_name}.tar.gz _build/#{mix_env}/rel/#{app_name}"
+    "cd _build/#{mix_env}/rel/"
+    "tar -cvzf releases/#{app_name}.tar.gz #{app_name}/"
+    "cd -"
   end
 end
 
