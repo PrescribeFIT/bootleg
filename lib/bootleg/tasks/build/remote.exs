@@ -15,7 +15,6 @@ task :remote_build do
   invoke(:remote_scm_update)
   invoke(:compile)
   invoke(:remote_generate_release)
-  invoke(:create_release_archive)
 
   if build_role.options[:release_workspace] do
     invoke(:copy_build_release)
@@ -85,19 +84,6 @@ task :clean do
     remote :build do
       "rm -rvf #{locations}"
     end
-  end
-end
-
-task :create_release_archive do
-  mix_env = config({:mix_env, "prod"})
-  app_name = Config.app()
-  build_role = Config.get_role(:build)
-  workspace = build_role.options[:workspace]
-
-  remote :build, cd: workspace do
-    "mkdir #{workspace}/releases/"
-    "cd #{workspace}/_build/#{mix_env}/rel/"
-    "tar -cvzf #{workspace}/releases/#{app_name}.tar.gz #{app_name}/"
   end
 end
 
