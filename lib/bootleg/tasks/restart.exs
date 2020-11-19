@@ -3,7 +3,7 @@ use Bootleg.DSL
 
 task :restart do
   remote :app do
-    "sudo systemctl #{Config.app()} restart"
+    "sudo systemctl restart #{Config.app()}"
   end
 
   UI.info("#{Config.app()} restarted")
